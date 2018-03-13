@@ -74,8 +74,8 @@ int UIOperation::getJudgeResult(int ms,int method)
 	}
 	case INCEPTION_V3:
 	{
-		int *t = (int*)cutter->judgeImage(src, INCEPTION_V3);
-		result = (*t) ? result | 8 : result;
+		int t = cutter->judgeImage(src, INCEPTION_V3);
+		result = t ? result | 8 : result;//返回结果为1则把result第四位赋值为1
 		return result;
 		break;
 	}

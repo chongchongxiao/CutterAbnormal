@@ -10,13 +10,13 @@ Cutter::Cutter()
 	//cannyThreshold2 = 255;
 	cannyThreshold1 = 20;
 	cannyThreshold2 = cannyThreshold1*3;
-	//pi = new PythonInterface();
+	pi = new PythonInterface();
 }
 
 
 Cutter::~Cutter()
 {
-	//delete pi;
+	delete pi;
 }
 
 
@@ -143,14 +143,14 @@ void* Cutter::compareImage(const Mat&image1, const Mat& image2, int method)
 	}
 }
 
-void * Cutter::judgeImage(const Mat & image, int method)
+int Cutter::judgeImage(const Mat & image, int method)
 {
 	switch (method)
 	{
 	case INCEPTION_V3:
 	{
 		int result = getInceptionV3(image);
-		return &result;
+		return result;
 		break;
 	}
 	default:
@@ -204,11 +204,10 @@ Mat Cutter::getHistImg(const MatND& hist)
 
 int Cutter::getInceptionV3(const Mat & image)
 {
-	if (!createDirectory(judgeImagePath)) return 0;
+	if (!createDirectory(judgeImagePath)) return -1;
 	imwrite(judgeImagePath+"//"+inceptionImage,image);
 	
-	return 0;
-	//return pi->getInceptionV3();
+	return pi->getInceptionV3();
 }
 
 double Cutter::getArea(const Mat& srcImage,Mat& areaImage)

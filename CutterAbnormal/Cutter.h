@@ -10,7 +10,7 @@ using namespace cv;
 
 #include "StandardVideo.h"
 #include "Util.h"   
-//#include "PythonInterface.h"
+#include "PythonInterface.h"
 
 //比较算法
 #define HIST 0 //直方图
@@ -55,8 +55,8 @@ class Cutter
 {
 private:
  
-	//PythonInterface * pi;
-	string judgeImagePath = ".//judgeImage";
+	PythonInterface * pi;
+	string judgeImagePath = "E:\\VisualProjects\\judgeImage";
 	string inceptionImage = "inception.png";
 	double histThreshold;//直方图阈值，低于这个阈值，表示异常
 	double cannyThreshold1, cannyThreshold2;//canny算子阈值，计算轮廓面积时候设定的值
@@ -79,7 +79,7 @@ public:
 	
 	//bool compareImage(const Mat&image1,const Mat& image2,int method);//比较两张图片,true表示异常
 	void* compareImage(const Mat&image1, const Mat& image2, int method);//比较方法获取判断结果
-	void* judgeImage(const Mat& image, int method);//非比较方法获取判断结果
+	int judgeImage(const Mat& image, int method);//非比较方法获取判断结果
 	void setHistThreshold(double tr);
 	void setAreaThreshold(double areaTr, double tr1 = 20, double tr2 = 60);
 	

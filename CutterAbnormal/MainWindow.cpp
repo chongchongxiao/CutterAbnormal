@@ -214,11 +214,11 @@ void MainWindow::saveTemplate()
 
 void MainWindow::capture()
 {
-	UIO->setVideoPath("E://VisualProjects//video//camera//ÎÞÀäÈ´Òº.avi");
-	UIO->setConfigePara("A4mm", "B12");
+	UIO->setVideoPath("E://VisualProjects//video//Camera Roll//Ô­Ê¼_¶Ìµ¶1.mp4");
+	UIO->setConfigePara("AC", "BD");
 	//HistResult* histResult = (HistResult*)UIO->getJudgeResultTest(10000, HIST);
-	AreaResult* areaResult = (AreaResult*)UIO->getJudgeResultTest(accumulateTime, CONTOURAREA);
-
+	int a = UIO->getJudgeResult(5000, INCEPTION_V3);
+	cout << a << endl;
 }
 
 void MainWindow::savetmp()
