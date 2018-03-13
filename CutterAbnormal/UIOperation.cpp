@@ -46,18 +46,21 @@ int UIOperation::getJudgeResult(int ms,int method)
 	//imshow("1_1", src);
 	//imshow("1_2", standard);
 	src = stdVideo->getCutterByTemplate(src);
-	standard = stdVideo->getCutterByTemplate(standard);
+	//深度学习方法判断的时候不需要基准视频，此时基准视频为空，调用获取木板的方法会报错，因此需要判断一下
+	standard = standard.empty() ? standard : stdVideo->getCutterByTemplate(standard);
+	//standard = stdVideo->getCutterByTemplate(standard);
 	//imshow("2_1", src);
 	//imshow("2_2", standard);
 	//waitKey();
 	result = timeDiff + ms < 0 ? result | 1 : result;//第一位表示是否时差为负数，并且绝对值大于ms
 	result = src.empty() ? result | 2 : result;//第二位表示待测图像是否读取失败
-	result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败
+	
 
 	switch (method)
 	{
 	case HIST:
 	{     //学到了，case中定义变量必须把整个case下的语句放在{}中
+		result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败,放到这里是因为有些方法不需要基准视频
 		HistResult * histResult = (HistResult*)cutter->compareImage(src, standard, HIST);
 		result = histResult->abnormal ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
 		histResult->result = result;
@@ -66,6 +69,7 @@ int UIOperation::getJudgeResult(int ms,int method)
 	}
 	case CONTOURAREA:
 	{
+		result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败
 		AreaResult * areaResult = (AreaResult*)cutter->compareImage(src, standard, CONTOURAREA);
 		result = areaResult->abnormal ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
 		areaResult->result = result;
@@ -231,7 +235,7 @@ vector<string> UIOperation::getAllMethod()
 void UIOperation::setConfigePara(string cutterType, string partType)
 {
 	conf = stdVideo->getStdVideoConfigeByFile(cutterType, partType);
-	templateImage = conf.templateImage;//更新模板图片
+	//templateImage = conf.templateImage;//更新模板图片
 	standardVideoPath = conf.stdVideoPath;//更新基准视频路径
 	setHistThreshold(conf.histThreshold);//更新直方图阈值
 }
