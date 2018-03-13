@@ -71,7 +71,9 @@ int UIOperation::getJudgeResult(int ms,int method)
 		areaResult->result = result;
 		return result;
 		break;
+	}
 	case INCEPTION_V3:
+	{
 		int *t = (int*)cutter->judgeImage(src, INCEPTION_V3);
 		result = (*t) ? result | 8 : result;
 		return result;
@@ -116,7 +118,9 @@ void* UIOperation::getJudgeResultTest(int ms,int method)
 		areaResult->result = result;
 		return areaResult;
 		break;
+	}
 	case INCEPTION_V3:
+	{
 		int *t = (int*)cutter->judgeImage(src,INCEPTION_V3);
 		result = (*t) ? result | 8 : result;
 		return &result;

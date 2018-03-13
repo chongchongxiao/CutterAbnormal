@@ -10,7 +10,7 @@ using namespace cv;
 
 #include "StandardVideo.h"
 #include "Util.h"
-#include "PythonInterface.h"
+//#include "PythonInterface.h"
 
 //比较算法
 #define HIST 0 //直方图
@@ -55,7 +55,7 @@ class Cutter
 {
 private:
  
-	PythonInterface * pi;
+	//PythonInterface * pi;
 	string judgeImagePath = ".//judgeImage";
 	string inceptionImage = "inception.png";
 	double histThreshold;//直方图阈值，低于这个阈值，表示异常
