@@ -1,4 +1,5 @@
 #pragma once
+//制作模板需要全局变量，因此单独写了一个h+cpp的文件
 #include<iostream>
 #include<opencv2/opencv.hpp>
 using namespace std;

@@ -1,0 +1,16 @@
+软件版本
+OpenCV3.4(已编译contrib模块)
+Qt5.8.0 (VS插件版,MSVC)
+Visual Studion Community 2017（15.5.4）
+python 3.6.4rc1
+
+需要更改的路径
+PythonInterface.h
+	cmdInception  #运行Inception python脚本路径
+	resultInception #inception方法结果存放路径
+	
+	
+StandardVideo.h
+	configFilePath #配置文件存放路径
+	templateImagePath #模板图片存放路径
+

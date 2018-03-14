@@ -1,5 +1,5 @@
 #pragma once
-//刀具操作类
+//刀具操作类，主要封装了刀具异常判别的算法
 #include<iostream>
 #include<vector>
 #include<map>
