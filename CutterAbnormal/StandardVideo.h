@@ -4,7 +4,11 @@
 #include "Util.h"
 using namespace std;
 using namespace cv;
-
+/*基准视频的参数读取
+**获取刀具子图
+**获取深度学习的数据（图片）
+**训练深度学习模型
+*/
 
 struct ConfigPara
 {
@@ -85,7 +89,10 @@ public:
 	vector<string> getAllCutter();//获取所有的刀具类型
 	vector<string> getAllPart(string cutter);//根据选择的刀具获取所有的加工零件类型
 
+	void makeTrainData(vector<string> files);//制作深度学习数据，主要是需要提取刀具子图，所以放到这个类中，虽然感觉有点不太合适
+
 private:
+	string getTime();//获取当前时间，精确到秒,创建文件夹的名字
 	//bool getConfigParaByString(string buffer,ConfigPara& para);//通过读取到的字符串解析参数信息
 
 private:
@@ -96,8 +103,10 @@ private:
 	// cutterRectLength, cutterRectWide;//刀具框的长和宽
 	Mat cutterTemplateImage;//模板图片，提取刀具用
 	ConfigPara configPara;//存储配置文件的相关参数
-	string configFilePath="E://VisualProjects//template//template.conf";//配置文件路径
-	string templateImagePath = "E://VisualProjects//template";//模板图片保存目录
+	string templatePath; /*"E:\\VisualProjects\\template";*///配置文件路径
+	string templateFileName="template.conf";//配置文件名称
+	string dataDir;//存放生成的训练集
+	//string templateImagePath = "E:\\VisualProjects\\template";//模板图片保存目录
 	
 };
 

@@ -4,13 +4,9 @@ Qt5.8.0 (VS插件版,MSVC)
 Visual Studion Community 2017（15.5.4）
 python 3.6.4rc1
 
-需要更改的路径
-PythonInterface.h
-	cmdInception  #运行Inception python脚本路径
-	resultInception #inception方法结果存放路径
-	
-	
-StandardVideo.h
-	configFilePath #配置文件存放路径
-	templateImagePath #模板图片存放路径
+需要注意
+运行会在当前目录下生成template文件夹和judgeImage文件夹
+template  存放刀具提取模板的一些参数，以及模板图片、基准视频
+judgeImage  主要是调用python模块时，传递参数较难，采用文件传递的方式，还有就是一些python模块
+dataDir  生成训练数据的存放文件夹
 

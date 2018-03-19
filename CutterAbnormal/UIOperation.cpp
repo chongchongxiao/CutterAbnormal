@@ -79,7 +79,7 @@ int UIOperation::getJudgeResult(int ms,int method)
 	case INCEPTION_V3:
 	{
 		int t = cutter->judgeImage(src, INCEPTION_V3);
-		result = t ? result | 8 : result;//返回结果为1则把result第四位赋值为1
+		result = t == 1 ? result | 8 : result;//返回结果为1则把result第四位赋值为1
 		return result;
 		break;
 	}
@@ -125,9 +125,10 @@ void* UIOperation::getJudgeResultTest(int ms,int method)
 	}
 	case INCEPTION_V3:
 	{
-		int *t = (int*)cutter->judgeImage(src,INCEPTION_V3);
-		result = (*t) ? result | 8 : result;
-		return &result;
+		return NULL;
+		//int t = cutter->judgeImage(src,INCEPTION_V3);
+		//result = t == 1 ? result | 8 : result;
+		//return result;  //这里返回一定会出错，最好不要使用，使用另外一个方法getJudgeResult
 		break;
 	}
 	default:
@@ -205,6 +206,11 @@ Mat UIOperation::getFrameFromCamera()
 		cameraCapture -> read(frame);
 	}
 	return frame;
+}
+
+void UIOperation::makeTrainData(vector<string> files)
+{
+	stdVideo->makeTrainData(files);
 }
 
 

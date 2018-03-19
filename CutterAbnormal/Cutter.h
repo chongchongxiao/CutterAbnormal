@@ -56,8 +56,8 @@ class Cutter
 private:
  
 	PythonInterface * pi;
-	string judgeImagePath = "E:\\VisualProjects\\judgeImage";
-	string inceptionImage = "inception.png";
+	string judgeImagePath;//路径
+	string inceptionImage = "inception.png";//名称
 	double histThreshold;//直方图阈值，低于这个阈值，表示异常
 	double cannyThreshold1, cannyThreshold2;//canny算子阈值，计算轮廓面积时候设定的值
 	double areaThreshold;//轮廓面积阈值，差值大于这个值表示异常
@@ -82,5 +82,8 @@ public:
 	int judgeImage(const Mat& image, int method);//非比较方法获取判断结果
 	void setHistThreshold(double tr);
 	void setAreaThreshold(double areaTr, double tr1 = 20, double tr2 = 60);
+
+	
+	void dnnTrain(string dataDir, int method);
 	
 };

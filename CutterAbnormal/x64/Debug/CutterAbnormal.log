@@ -1,19 +1,2 @@
-﻿  Moc'ing MainWindow.h...
-  Uic'ing MainWindow.ui...
-  Rcc'ing MainWindow.qrc...
-RCC : warning : No resources in 'E:\VisualProjects\CutterAbnormal\CutterAbnormal\MainWindow.qrc'.
-  
-  Cutter.cpp
-  moc_MainWindow.cpp
-  main.cpp
-  MainWindow.cpp
-  makeTemplate.cpp
-  PythonInterface.cpp
-  StandardVideo.cpp
-  UIOperation.cpp
-UIOperation.cpp(128): warning C4312: “类型转换”: 从“int”转换到更大的“int *”
-  Util.cpp
-  正在生成代码...
-e:\visualprojects\cutterabnormal\cutterabnormal\uioperation.cpp(130): warning C4172: 返回局部变量或临时变量的地址: result
-  qrc_MainWindow.cpp
+﻿  StandardVideo.cpp
   CutterAbnormal.vcxproj -> E:\VisualProjects\CutterAbnormal\x64\Debug\CutterAbnormal.exe

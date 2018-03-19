@@ -6,6 +6,7 @@
 
 PythonInterface::PythonInterface()
 {
+	resultPath = getPath("judgeImage");
 }
 
 
@@ -84,12 +85,14 @@ int PythonInterface::getInceptionV3()
 	
 	//char cmdexe[100];
 	//strcpy_s(cmdexe, cmd.c_str());
-	bool res = system_hide(cmdInception.c_str());
+	//"python E:\\VisualProjects\\judgeImage\\Classify_V3.py"
+	string cmd = "python " + resultPath + "\\" + inceptionPyName;
+	bool res = system_hide(cmd.c_str());
 	if (!res)//返回值不为true，表示执行错误
 	{
 		return -1;
 	}
-	ifstream fin(resultInception);
+	ifstream fin(resultPath+"\\"+ resultInceptionName);
 	string buffer;
 	int result = -1;
 	if (fin.is_open())

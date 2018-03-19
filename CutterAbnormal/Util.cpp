@@ -16,9 +16,13 @@ void SplitString(const string& s, vector<string>& v, const string& c)
 }
 
 bool createDirectory(string path) {
+	if (access(path.c_str(), 0) == 0) //如果文件夹存在
+	{
+		return true;
+	}
 	vector<string> paths;
 	string dirPath;
-	SplitString(path, paths, "//");//分割路径，逐一创建
+	SplitString(path, paths, "\\");//分割路径，逐一创建
 	for (vector<string>::iterator iter = paths.begin(); iter != paths.end(); iter++)
 	{
 		dirPath += (*iter);
@@ -30,7 +34,7 @@ bool createDirectory(string path) {
 				return false;
 			}
 		}
-		dirPath += "//";
+		dirPath += "\\";
 	}
 	return true;
 }
@@ -80,6 +84,23 @@ string getFileType(string filename)
 		return string();
 	}
 	return filename.substr(pos);
+}
+
+string getPath(string type)
+{
+	if (type == "template")//获取模板路径template
+	{
+		return PATH_TEMPLATE;
+	}
+	else if (type == "judgeImage")
+	{
+		return PATH_JUDGEIMAGE;
+	}
+	else if (type == "dataDir")
+	{
+		return PATH_DATA;
+	}
+	return "";
 }
 
 

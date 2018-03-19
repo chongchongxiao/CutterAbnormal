@@ -4,12 +4,13 @@
 Cutter::Cutter()
 {
 
-	histThreshold = HISTTHRESHOLD_A4MM;
+	histThreshold = 0.7;
 	areaThreshold = 50;
 	//cannyThreshold1 = 128;
 	//cannyThreshold2 = 255;
 	cannyThreshold1 = 20;
 	cannyThreshold2 = cannyThreshold1*3;
+	judgeImagePath = getPath("judgeImage");//»ñÈ¡Â·¾¶
 	pi = new PythonInterface();
 }
 
@@ -173,6 +174,8 @@ void Cutter::setAreaThreshold(double areaTr, double tr1, double tr2)
 
 
 
+
+
 Mat Cutter::getHistImg(const MatND& hist)
 {
 	double maxVal = 0;
@@ -269,3 +272,5 @@ double Cutter::contourAreaCompare(const Mat & image1, const Mat & image2)
 	double diff = area1 > area2 ? area1 - area2 : area2 - area1;
 	return diff ;
 }
+
+

@@ -1,9 +1,10 @@
 #include "StandardVideo.h"
 
 
-
 StandardVideo::StandardVideo()
 {
+	templatePath = getPath("template");
+	dataDir = getPath("dataDir");
 }
 
 
@@ -48,16 +49,15 @@ Mat StandardVideo::getCutterByTemplate(const Mat & image_source)
 bool StandardVideo::saveStdVideoToFile(ConfigPara pr)
 {
 
-	if (access(templateImagePath.c_str(), 0) == -1) {
-		if (!createDirectory(templateImagePath)) {
-			return false;
-		}
+	if (!createDirectory(templatePath)) 
+	{
+		return false;
 	}
 	string filename = (pr.cutterType + pr.partType) + "." + getFileType(pr.stdVideoPath);
-	if (!copyFileToDir(pr.stdVideoPath, templateImagePath + "//" + filename))
+	if (!copyFileToDir(pr.stdVideoPath, templatePath + "\\" + filename))
 		return false;
 
-	ifstream tempConfFileFin(configFilePath);
+	ifstream tempConfFileFin(templatePath+"\\"+templateFileName);
 	string confID = pr.cutterType + pr.partType;//配置参数的ID有刀具类型和零件类型的组合来确定
 	string buffer;
 	map<string, ConfigPara> confs;//存储参数
@@ -77,8 +77,9 @@ bool StandardVideo::saveStdVideoToFile(ConfigPara pr)
 		tempConfFileFin.close();
 	}
 
-
-	ofstream tempConfFileFout(configFilePath);
+	
+	string templateImagePath = templatePath + "\\" + pr.confID + ".png";//模板路径通过刀具名称和零件名称确定
+	ofstream tempConfFileFout(templatePath + "\\" + templateFileName);
 	map<string, ConfigPara>::iterator iter;
 	if (!tempConfFileFout.is_open()) return false;
 	if (confs.count(confID) == 0)//源配置文件中不含有需要保存的刀具类型
@@ -92,7 +93,7 @@ bool StandardVideo::saveStdVideoToFile(ConfigPara pr)
 	}
 	if (pr.isCutCutter == 1)//只有裁剪之后才更新模板
 	{
-		imwrite(templateImagePath + "//" + pr.confID + ".png", pr.templateImage);//图片直接写入即可，如果 已存在，会直接覆盖掉
+		imwrite(templateImagePath, pr.templateImage);//图片直接写入即可，如果 已存在，会直接覆盖掉
 	}
 	//循环遍历重新保存到文件中
 	for (iter = confs.begin(); iter != confs.end(); ++iter)
@@ -106,9 +107,10 @@ bool StandardVideo::saveStdVideoToFile(ConfigPara pr)
 
 ConfigPara StandardVideo::getStdVideoConfigeByFile(string cutterType, string partType)
 {
-	ifstream TempConfFileFin(configFilePath);
+	ifstream TempConfFileFin(templatePath + "\\" + templateFileName);
 	string confID = cutterType + partType;//配置参数的ID有刀具类型和零件类型的组合来确定
 	string buffer;
+	string templateImagePath = templatePath + "\\" + confID + ".png";
 	bool flag = false;//记录是否读取成功
 	//TemplatePara templatePara;
 	if (TempConfFileFin.is_open())
@@ -119,7 +121,7 @@ ConfigPara StandardVideo::getStdVideoConfigeByFile(string cutterType, string par
 			if (configPara.getConfigParaByString(buffer)&& configPara.confID == confID)
 			{
 				if(configPara.isCutCutter==1)//必须用户制作模板之后才需要读取模板图片
-					cutterTemplateImage = imread(templateImagePath +"//"+ configPara.confID + ".png");
+					cutterTemplateImage = imread(templateImagePath);
 				flag = true;
 				break;
 			}
@@ -135,7 +137,7 @@ ConfigPara StandardVideo::getStdVideoConfigeByFile(string cutterType, string par
 
 vector<string> StandardVideo::getAllCutter()
 {
-	ifstream TempConfFileFin(configFilePath);
+	ifstream TempConfFileFin(templatePath + "\\" + templateFileName);
 	vector<string> cutters;
 	string buffer;
 	bool flag = false;//记录是否读取成功
@@ -164,7 +166,7 @@ vector<string> StandardVideo::getAllCutter()
 
 vector<string> StandardVideo::getAllPart(string cutter)
 {
-	ifstream TempConfFileFin(configFilePath);
+	ifstream TempConfFileFin(templatePath + "\\" + templateFileName);
 	vector<string> parts;
 	string buffer;
 	bool flag = false;//记录是否读取成功
@@ -186,6 +188,51 @@ vector<string> StandardVideo::getAllPart(string cutter)
 	sort(parts.begin(), parts.end());
 	parts.erase(unique(parts.begin(), parts.end()), parts.end());
 	return parts;
+}
+
+void StandardVideo::makeTrainData(vector<string> files)
+{
+	string time = getTime();
+	string dirName = dataDir + "\\" + time;
+	if (!createDirectory(dirName)) return;//创建数据文件夹失败，则直接返回
+	VideoCapture capture;
+	long currentFrame = 1;
+	string frameImage;//每一帧的存储路径
+	for (vector<string>::iterator iter = files.begin(); iter != files.end(); iter++)
+	{
+		capture.open(*iter);//打开视频文件
+		if (!capture.isOpened())//文件读取失败，直接跳过
+			continue;
+		//获取整个帧数  
+		//long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
+		capture.set(CV_CAP_PROP_POS_FRAMES, 0);//设置开始帧 
+		Mat frame;//读取到的图像
+		
+		while (capture.read(frame))
+		{
+			frame = getCutterByTemplate(frame);
+			//每一帧写入文件
+			frameImage = dirName + "\\" + time + "_" + to_string(currentFrame) + ".png";
+			imwrite(frameImage, frame);
+			currentFrame++;
+		}
+		//关闭视频文件  
+		capture.release();
+	}
+}
+
+
+string StandardVideo::getTime()
+{
+	time_t rawtime = time(NULL);
+	struct tm * timeinfo;
+	timeinfo = localtime(&rawtime);
+	char timeNow[256];
+	memset(timeNow, '\0', 256);
+	//根据当前时间得到文件名(一个月一个log文件)
+	sprintf(timeNow, "%04d%02d%02d%02d%02d%02d", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday,
+		timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	return string(timeNow);
 }
 
 

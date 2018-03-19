@@ -106,7 +106,15 @@ void MainWindow::selectCutterType()
 
 void MainWindow::confirmTimeDiff()
 {
-	qDebug() << 123 << endl;
+	//UIO->setVideoPath("E://VisualProjects//video//Camera Roll//Ô­Ê¼_¶Ìµ¶1.mp4");
+	UIO->setConfigePara("AC", "BD");
+	vector<string> files;
+	string file1 = "E:\\VisualProjects\\video\\20180316video\\WIN_20180316_16_58_21_Pro.mp4";
+	string file2 = "E:\\VisualProjects\\video\\20180316video\\WIN_20180316_16_59_11_Pro.mp4";
+	files.push_back(file1);
+	files.push_back(file2);
+	UIO->makeTrainData(files);
+
 }
 
 void MainWindow::selectFile()

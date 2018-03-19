@@ -41,6 +41,8 @@ public:
 	Mat getFrameFromCamera();//从摄像头读取图片
 	
 
+	void makeTrainData(vector<string> files);//制作训练集
+
 private:
 	Mat getFrameFromVideo(string videoName, int ms);//读取视频第ms毫秒的帧，向下取整
 
