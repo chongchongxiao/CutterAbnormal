@@ -151,8 +151,13 @@ int PythonInterface::getInceptionV3()
 
 	if (!checkPython())//如果线程不存在
 	{
+		//启动线程
 		thread inceptionThread(startInceptionThread);
 		inceptionThread.detach();//把线程移交系统管理，主进程结束不会影响子线程的运行
+		if (!checkPython())//如果启动失败
+		{
+			return -1;
+		}
 	}
 
 	ifstream fin(resultPath+"\\"+ resultInceptionName);

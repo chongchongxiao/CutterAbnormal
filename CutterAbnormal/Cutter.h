@@ -77,8 +77,8 @@ public:
 	~Cutter();
 
 	
-	//bool compareImage(const Mat&image1,const Mat& image2,int method);//比较两张图片,true表示异常
-	void* compareImage(const Mat&image1, const Mat& image2, int method);//比较方法获取判断结果
+	int compareImage(const Mat&image1, const Mat& image2, int method);//比较方法获取判断结果
+	void* compareImageTest(const Mat&image1, const Mat& image2, int method);//比较方法获取判断结果，测试环境使用，主要是会返回更多的内容，但会影响效率
 	int judgeImage(const Mat& image, int method);//非比较方法获取判断结果
 	bool endJudgeImage();//暂时结束掉判别程序，主要是结束掉python的脚本程序
 	

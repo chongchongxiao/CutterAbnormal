@@ -34,7 +34,7 @@ public:
 	Mat getVideoCutterImage(int ms);//获取视频ms毫秒的刀具图片，刷新视频流
 	Mat getStandardVideoImage(int ms);//获取基准视频ms毫秒的图片,用于显示视频流，这里的ms是待测视频的时间（由timeDiff校正之后）
 	
-	/*获取参数类*/
+	/*获取参数*/
 	vector<string> getAllCutterType();//获取所有的刀具类型
 	vector<string> getAllPartType(string cutter);//获取所有的零件类型
 	

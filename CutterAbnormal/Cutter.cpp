@@ -112,7 +112,34 @@ double Cutter::histCompare(const Mat&image1, const Mat&image2)
 	}
 }*/
 
-void* Cutter::compareImage(const Mat&image1, const Mat& image2, int method)
+int Cutter::compareImage(const Mat & image1, const Mat & image2, int method)
+{
+	Mat img1, img2;
+
+	img1 = image1;
+	img2 = image2;
+
+
+	switch (method)
+	{
+	case HIST:
+		double sim = histCompare(img1, img2);//两个图片相似度
+		int result = sim < histThreshold ? 1 : 0;//如果相似度小于异常，则表示异常，1异常，0正常
+		return result;
+		break;//这个应该没用吧
+	case CONTOURAREA:
+		double diffArea = contourAreaCompare(img1, img2);
+		int result = diffArea > areaThreshold ? 1 : 0;//如果面积差超过阈值，则表示异常，1异常，0正常
+		return result;
+		break;
+
+	default:
+		return -1;
+		break;
+	}
+}
+
+void* Cutter::compareImageTest(const Mat&image1, const Mat& image2, int method)
 {
 	Mat img1, img2;
 
