@@ -89,6 +89,11 @@ int UIOperation::getJudgeResult(int ms,int method)
 	}
 }
 
+bool UIOperation::endJudge()
+{
+	return cutter->endJudgeImage();
+}
+
 void* UIOperation::getJudgeResultTest(int ms,int method)
 {
 	int result = 0;//解释最终异常原因，二进制数，1表示出现异常，0表示正常
@@ -233,10 +238,6 @@ vector<string> UIOperation::getAllPartType(string cutter)
 	return stdVideo->getAllPart(cutter);
 }
 
-vector<string> UIOperation::getAllMethod()
-{
-	return vector<string>();
-}
 
 void UIOperation::setConfigePara(string cutterType, string partType)
 {
@@ -248,6 +249,10 @@ void UIOperation::setConfigePara(string cutterType, string partType)
 
 Mat UIOperation::getFrameFromVideo(string videoName,int ms)
 {
+	if (access(videoName.c_str(), 00) == -1)
+	{
+		return Mat();
+	}
 	if (ms < 0)return Mat();
 	VideoCapture capture(videoName);
 	//检测是否正常打开:

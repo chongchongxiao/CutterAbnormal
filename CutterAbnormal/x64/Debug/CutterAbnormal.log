@@ -1,2 +1,3 @@
-﻿  StandardVideo.cpp
+﻿  MainWindow.cpp
+e:\visualprojects\cutterabnormal\cutterabnormal\mainwindow.cpp(84): warning C4715: “cvMat2QImage”: 不是所有的控件路径都返回值
   CutterAbnormal.vcxproj -> E:\VisualProjects\CutterAbnormal\x64\Debug\CutterAbnormal.exe

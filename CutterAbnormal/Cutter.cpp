@@ -160,6 +160,11 @@ int Cutter::judgeImage(const Mat & image, int method)
 	}
 }
 
+bool Cutter::endJudgeImage()
+{
+	return pi->endPython();
+}
+
 void Cutter::setHistThreshold(double tr)
 {
 	histThreshold = tr;
@@ -208,8 +213,7 @@ Mat Cutter::getHistImg(const MatND& hist)
 int Cutter::getInceptionV3(const Mat & image)
 {
 	if (!createDirectory(judgeImagePath)) return -1;
-	imwrite(judgeImagePath+"//"+inceptionImage,image);
-	
+	imwrite(judgeImagePath+"\\"+inceptionImage,image);
 	return pi->getInceptionV3();
 }
 

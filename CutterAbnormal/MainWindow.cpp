@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.setupUi(this);
 	UIO = new UIOperation();
 	judgeTime = 1000;//默认1秒
-	srcLabel = new QLabel;
+	srcLabel = new QLabel();
 	cutterPara = new QComboBox();
 	//cutterPara->addItem(QWidget::tr("please select cutter parameter"));
 	cutterPara->addItem(QWidget::tr("A4mm"));
@@ -59,23 +59,57 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(savetmp, SIGNAL(clicked(bool)), this, SLOT(savetmp()));
 }
 
+QImage cvMat2QImage(const cv::Mat& mat)
+{
+	// 8-bits unsigned, NO. OF CHANNELS = 1  
+	if (mat.type() == CV_8UC1)
+	{
+		QImage image(mat.cols, mat.rows, QImage::Format_Indexed8);
+		// Set the color table (used to translate colour indexes to qRgb values)  
+		image.setColorCount(256);
+		for (int i = 0; i < 256; i++)
+		{
+			image.setColor(i, qRgb(i, i, i));
+		}
+		// Copy input Mat  
+		uchar *pSrc = mat.data;
+		for (int row = 0; row < mat.rows; row++)
+		{
+			uchar *pDest = image.scanLine(row);
+			memcpy(pDest, pSrc, mat.cols);
+			pSrc += mat.step;
+		}
+		return image;
+	}
+}
+
+
+
 
 void MainWindow::start() 
 {
-	UIO->setConfigePara("A4mm", "B12");
+	UIO->setConfigePara("AC", "BD");
+	UIO->setVideoPath("E:\\VisualProjects\\video\\Camera Roll\\基准视频.mp4");
+
+
 	if (isStart && !isStop) return;
 	isStart = true;	//开始判断
 	accumulateTime = 0;//初始化累计时间
+
+	
+
 	if (timer == NULL)
 	{
 		timer = new QTimer(this);
 		//timer->setSingleShot(true)
-		connect(timer, SIGNAL(timeout()), this, SLOT(judge()));
+		connect(timer, SIGNAL(timeout()), this, SLOT(updateImage()));
+		//connect(judgeTimer, SIGNAL(timeout()), this, SLOT(threadEnd()));
+		//connect(t, SIGNAL(finished()), this, SLOT(threadEnd()));
 		//时间间隔
 	}
 	if (!timer->isActive())
 	{
-		timer->start(judgeTime);
+		timer->start(200);
 	}
 
 }
@@ -231,5 +265,27 @@ void MainWindow::capture()
 
 void MainWindow::savetmp()
 {
+	if (UIO->endJudge())
+	{
+		qDebug() << "end" << endl;
+	}
+}
 
+
+
+
+
+void MainWindow::updateImage()
+{
+	accumulateTime += 200;
+	Mat image = UIO->getVideoImage(accumulateTime);
+	//QImage qImage = cvMat2QImage(image);
+	imshow("123", image);
+	//srcLabel->setPixmap(QPixmap::fromImage(qImage));
+	//srcLabel->update();
+}
+
+void MainWindow::threadEnd()
+{
+	qDebug() << 123456 << endl;
 }

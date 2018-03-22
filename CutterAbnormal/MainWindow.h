@@ -11,10 +11,12 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QTimer>
+#include <qmessagebox.h>
 #include<opencv2/opencv.hpp>
-#include "UIOperation.h"
 using namespace std;
 using namespace cv;
+
+#include "UIOperation.h"
 
 class MainWindow : public QMainWindow
 {
@@ -35,6 +37,8 @@ private slots :
 	void saveTemplate();
 	void capture();
 	void savetmp();
+	void updateImage();
+	void threadEnd();
 
 private:
 	Ui::MainWindowClass ui;
@@ -45,6 +49,7 @@ private:
 	QLineEdit *timeDiffEdit;//基准视频和待测视频时差输入框
 	UIOperation *UIO;
 	QTimer *timer;//定时器,
+	QTimer *judgeTimer;//专门做判断使用的定时器
 	int judgeTime;//隔judgeTime个时间，就需要重新判断一次，单位ms
 	int accumulateTime=0;//开始累计时间
 	bool isStop=false;
