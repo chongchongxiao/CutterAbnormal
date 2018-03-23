@@ -24,7 +24,7 @@ public:
 	
 	/*获取判断结果*/
 	int getJudgeResult(int ms,int method);//获取判断结果，
-	bool endJudge();//结束判断，主要是用于getJudgeResult的结束，
+	bool endJudge(int method = STOP);//结束判断，主要是用于getJudgeResult的结束，STOP表示只删除结果文件，END表示删除结果文件并结束掉python
 	//这里注意这个函数在timeDiff+ms<0时，无法使用，所以最好自行先判断
 	void* getJudgeResultTest(int ms, int method);//获取判断结果，暂时测试环境下使用
 	

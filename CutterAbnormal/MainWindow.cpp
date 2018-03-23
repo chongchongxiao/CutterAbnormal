@@ -59,31 +59,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(savetmp, SIGNAL(clicked(bool)), this, SLOT(savetmp()));
 }
 
-QImage cvMat2QImage(const cv::Mat& mat)
-{
-	// 8-bits unsigned, NO. OF CHANNELS = 1  
-	if (mat.type() == CV_8UC1)
-	{
-		QImage image(mat.cols, mat.rows, QImage::Format_Indexed8);
-		// Set the color table (used to translate colour indexes to qRgb values)  
-		image.setColorCount(256);
-		for (int i = 0; i < 256; i++)
-		{
-			image.setColor(i, qRgb(i, i, i));
-		}
-		// Copy input Mat  
-		uchar *pSrc = mat.data;
-		for (int row = 0; row < mat.rows; row++)
-		{
-			uchar *pDest = image.scanLine(row);
-			memcpy(pDest, pSrc, mat.cols);
-			pSrc += mat.step;
-		}
-		return image;
-	}
-}
-
-
 
 
 void MainWindow::start() 
@@ -258,31 +233,41 @@ void MainWindow::capture()
 {
 	UIO->setVideoPath("E://VisualProjects//video//Camera Roll//原始_短刀1.mp4");
 	UIO->setConfigePara("AC", "BD");
-	//HistResult* histResult = (HistResult*)UIO->getJudgeResultTest(10000, HIST);
-	int a = UIO->getJudgeResult(5000, INCEPTION_V3);
-	cout << a << endl;
+	//HistResult* histResult = (HistResult*)UIO->getJudgeResultTest(10000, HIST); 
+	Mat ff = UIO->getVideoImage(1000);
+	//int a = UIO->getJudgeResult(5000, INCEPTION_V3);
+	//cout << a << endl;
 }
 
 void MainWindow::savetmp()
 {
-	if (UIO->endJudge())
-	{
-		qDebug() << "end" << endl;
-	}
+	qDebug() << "save" << endl;
+	QTimer *t = new QTimer();
+	QThread *thread = new QThread(this);
+	connect(t, SIGNAL(timeout()), this, SLOT(updateImage()),Qt::UniqueConnection);
+	t->start(100);
 }
 
 
-
+string getTime()
+{
+	time_t rawtime = time(NULL);
+	struct tm * timeinfo;
+	timeinfo = localtime(&rawtime);
+	char timeNow[256];
+	memset(timeNow, '\0', 256);
+	//根据当前时间得到文件名(一个月一个log文件)
+	sprintf(timeNow, "%04d%02d%02d%02d%02d%02d", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday,
+		timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	return string(timeNow);
+}
 
 
 void MainWindow::updateImage()
 {
-	accumulateTime += 200;
-	Mat image = UIO->getVideoImage(accumulateTime);
-	//QImage qImage = cvMat2QImage(image);
-	imshow("123", image);
-	//srcLabel->setPixmap(QPixmap::fromImage(qImage));
-	//srcLabel->update();
+	_sleep(1000);
+	string ttt = getTime();
+	qDebug() << "update" << QString::fromStdString(ttt) << endl;
 }
 
 void MainWindow::threadEnd()

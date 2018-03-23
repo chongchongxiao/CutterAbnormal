@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QTimer>
+#include <qthread.h>
 #include <qmessagebox.h>
 #include<opencv2/opencv.hpp>
 using namespace std;

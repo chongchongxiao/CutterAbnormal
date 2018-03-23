@@ -142,7 +142,17 @@ int PythonInterface::getInceptionV3()
 	//所以要把python程序先结束掉
 	if (checkPython() && !isStartInception)
 	{
-		endPython();
+		endPython(END);
+	}
+	//如果检测到python程序没有运行，但inception程序已经启动，那么可能是python程序意外退出了
+	//所以要重新启动python程序
+	if (!checkPython() && isStartInception)
+	{
+		startInception();//启动线程
+		if (!checkPython())//如果启动失败
+		{
+			return -1;
+		}
 	}
 	if (!isStartInception)
 	{
@@ -151,15 +161,17 @@ int PythonInterface::getInceptionV3()
 
 	if (!checkPython())//如果线程不存在
 	{
-		//启动线程
-		thread inceptionThread(startInceptionThread);
-		inceptionThread.detach();//把线程移交系统管理，主进程结束不会影响子线程的运行
+		
+		startInception();//启动线程
 		if (!checkPython())//如果启动失败
 		{
 			return -1;
 		}
 	}
-
+	if (!isFileExist(resultPath + "\\" + resultInceptionName))//如果判断结果文件不存在，那应该是python程序没有写入，所以不认为是异常
+	{
+		return 0;//返回0表示正常
+	}
 	ifstream fin(resultPath+"\\"+ resultInceptionName);
 	string buffer;
 	int result = -1;
@@ -169,28 +181,62 @@ int PythonInterface::getInceptionV3()
 		result = atoi(buffer.c_str());
 		fin.close();
 	}
-	return result;
+
+	if (result == NORMAL)
+	{
+		return 0;
+	}
+	else if (result == ABNORMAL)
+	{
+		return 1;
+	}
+	else
+	{
+		return -1;
+	}
 }
 
-bool PythonInterface::endPython()
+bool PythonInterface::endPython(int method)
 {
-	if (!checkPython())//如果python脚本程序已经结束掉
+	//无论部分结束还是完全结束，都是要删除掉结果文件
+	if (!removeFile(resultPath + "\\" + resultInceptionName))//每次结束都要删除结果文件，防止对下次的预测进行干扰
 	{
-		isStartInception = false;
-		return true;
+		return false;
 	}
-	if (destroyPython()&& !checkPython())//如果结束python程序成功
+	switch (method)
 	{
-		isStartInception = false;
-		return true;
+	case STOP:
+
+		break;
+	case END:
+	{
+		if (!checkPython())//如果python脚本程序已经结束掉
+		{
+			isStartInception = false;
+			return true;
+		}
+		if (destroyPython() && !checkPython())//如果结束python程序成功
+		{
+			isStartInception = false;
+			return true;
+		}
+	}
+		break;
+	default:
+		break;
 	}
 	return false;
-	
-
 }
 
 
 
+
+
+void PythonInterface::startInception()
+{
+	thread inceptionThread(startInceptionThread);
+	inceptionThread.detach();//把线程移交系统管理，主进程结束不会影响子线程的运行
+}
 
 bool PythonInterface::checkPython()
 {

@@ -55,18 +55,18 @@ int UIOperation::getJudgeResult(int ms,int method)
 	case HIST:
 	{     //学到了，case中定义变量必须把整个case下的语句放在{}中
 		result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败,放到这里是因为有些方法不需要基准视频
-		HistResult * histResult = (HistResult*)cutter->compareImageTest(src, standard, HIST);
-		result = histResult->abnormal ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
-		histResult->result = result;
+		int t=cutter->compareImage(src, standard, HIST);
+		result = t == 1 ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
+		result = t == -1 ? result | 16 : result;//第五位表示后台程序异常
 		return result;
 		break;
 	}
 	case CONTOURAREA:
 	{
 		result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败
-		AreaResult * areaResult = (AreaResult*)cutter->compareImageTest(src, standard, CONTOURAREA);
-		result = areaResult->abnormal ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
-		areaResult->result = result;
+		int t = cutter->compareImage(src, standard, CONTOURAREA);
+		result = t == 1 ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
+		result = t == -1 ? result | 16 : result;//第五位表示后台程序异常 
 		return result;
 		break;
 	}
@@ -84,9 +84,9 @@ int UIOperation::getJudgeResult(int ms,int method)
 	}
 }
 
-bool UIOperation::endJudge()
+bool UIOperation::endJudge(int method)
 {
-	return cutter->endJudgeImage();
+	return cutter->endJudgeImage(method);
 }
 
 void* UIOperation::getJudgeResultTest(int ms,int method)
@@ -94,13 +94,8 @@ void* UIOperation::getJudgeResultTest(int ms,int method)
 	int result = 0;//解释最终异常原因，二进制数，1表示出现异常，0表示正常
 	Mat src = getFrameFromVideo(videoPath, ms);
 	Mat standard = getFrameFromVideo(standardVideoPath, timeDiff + ms);
-	//imshow("1_1", src);
-	//imshow("1_2", standard);
 	src = stdVideo->getCutterByTemplate(src);
 	standard = stdVideo->getCutterByTemplate(standard);
-	//imshow("2_1", src);
-	//imshow("2_2", standard);
-	//waitKey();
 	result = timeDiff + ms < 0 ? result | 1 : result;//第一位表示是否时差为负数，并且绝对值大于ms
 	result = src.empty() ? result | 2 : result;//第二位表示待测图像是否读取失败
 	result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败
@@ -244,7 +239,7 @@ void UIOperation::setConfigePara(string cutterType, string partType)
 
 Mat UIOperation::getFrameFromVideo(string videoName,int ms)
 {
-	if (access(videoName.c_str(), 00) == -1)
+	if (!isFileExist(videoName))
 	{
 		return Mat();
 	}

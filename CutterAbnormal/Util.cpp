@@ -76,6 +76,28 @@ bool copyFileToDir(string srcFilename, string dstFilename)
 	return true;
 }
 
+bool isFileExist(string fileName)
+{
+	if (access(fileName.c_str(), 00) == -1)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool removeFile(string fileName)
+{
+	if (!isFileExist(fileName))//如果删除之前已经不存在了，那么认为删除成功
+	{
+		return true;
+	}
+	if (remove(fileName.c_str()) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
 string getFileType(string filename)
 {
 	int pos = filename.find(".");

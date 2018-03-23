@@ -4,6 +4,7 @@
 #include <io.h> // _access
 #include <direct.h> //_mkdir
 #include <fstream> //ifstream ofstream
+#include <stdio.h> //remove
 
 //若配置参数不存在时采用的默认值
 #ifdef TEST//测试环境下的各种ip设置 
@@ -20,9 +21,13 @@
 
 using namespace std;
 void SplitString(const string& s, vector<string>& v, const string& c);//对字符串s进行切割，以c为分隔符，切割后的数组保存在v中
+
+/*文件操作*/
 bool createDirectory(string path);//创建文件夹path（必须绝对路径,例如E://VisualProjects//template）
 bool copyFileToDir(string srcFilename,string dstFilename);//复制文件到指定目录
+bool isFileExist(string fileName);//判断文件是否存在
+bool removeFile(string fileName);//删除文件
+
 
 string getFileType(string filename);//获取文件后缀, 没有后缀返回""
-
 string getPath(string type);//通过名字获取路径

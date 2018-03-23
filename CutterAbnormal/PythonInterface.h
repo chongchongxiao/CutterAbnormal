@@ -10,13 +10,19 @@ using namespace std;
 
 #include"Util.h"
 
+#define NORMAL 1      //正常
+#define ABNORMAL 0    //异常
+
+#define STOP 0 //部分结束结束，只删除掉结果文件
+#define END 1 //完全结束，删除结果文件和关闭python程序
+
 class PythonInterface
 {
 public:
 	PythonInterface();
 	~PythonInterface();
 	int getInceptionV3();
-	bool endPython();//结束掉python进程
+	bool endPython(int method);//结束掉python进程
 
 private:
 	bool isInit = false;//是否初始化python运行环境，保证整个程序运行中只初始化一次
@@ -29,7 +35,7 @@ private:
 	string pythonName = "python";//python脚本的名字，因为可能干扰到本机的其他程序，所以后续可能会调整，
 
 private:
-	//void startInceptionThread();//开始inception预测的线程
+	void startInception();//开始inception预测的线程
 	bool checkPython();//检测python程序是否在运行
 	bool destroyPython();
 };
