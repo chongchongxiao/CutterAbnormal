@@ -5,11 +5,6 @@ Cutter::Cutter()
 {
 
 	histThreshold = 0.7;
-	areaThreshold = 50;
-	//cannyThreshold1 = 128;
-	//cannyThreshold2 = 255;
-	cannyThreshold1 = 20;
-	cannyThreshold2 = cannyThreshold1*3;
 	judgeImagePath = getPath("judgeImage");//获取路径
 	pi = new PythonInterface();
 }
@@ -134,13 +129,6 @@ int Cutter::compareImage(const Mat & image1, const Mat & image2, int method)
 		return result;
 		break;//这个应该没用吧
 	}
-	case CONTOURAREA:
-	{
-		double diffArea = contourAreaCompare(img1, img2);
-		int result = diffArea > areaThreshold ? 1 : 0;//如果面积差超过阈值，则表示异常，1异常，0正常
-		return result;
-		break;
-	}
 	default:
 		return -1;
 		break;
@@ -164,15 +152,6 @@ void* Cutter::compareImageTest(const Mat&image1, const Mat& image2, int method)
 		histResult.abnormal = histResult.sim < histThreshold;//是否异常，true表示异常
 		return &histResult;
 		break;//这个应该没用吧
-	case CONTOURAREA:
-		areaResult.image = image1;
-		areaResult.stdImage = image2;
-		areaResult.diffArea = contourAreaCompare(img1, img2);
-		areaResult.abnormal = areaResult.diffArea > areaThreshold;//是否异常，true表示异常
-		return &areaResult;
-		break;
-	
-
 	default:
 		return NULL;
 		break;
@@ -203,13 +182,6 @@ bool Cutter::endJudgeImage(int method)
 void Cutter::setHistThreshold(double tr)
 {
 	histThreshold = tr;
-}
-
-void Cutter::setAreaThreshold(double areaTr, double tr1, double tr2)
-{
-	areaThreshold = areaTr;
-	cannyThreshold1 = tr1;
-	cannyThreshold2 = tr2;
 }
 
 
@@ -250,66 +222,6 @@ int Cutter::getInceptionV3(const Mat & image)
 	if (!createDirectory(judgeImagePath)) return -1;
 	imwrite(judgeImagePath+"\\"+inceptionImage,image);
 	return pi->getInceptionV3();
-}
-
-double Cutter::getArea(const Mat& srcImage,Mat& areaImage)
-{
-	//首先对图像进行空间的转换  
-	Mat grayImage;
-	cvtColor(srcImage, grayImage, CV_BGR2GRAY);
-	//对灰度图进行滤波  
-	//GaussianBlur(grayImage, grayImage, Size(3, 3), 0, 0);
-	//imshow("【滤波后的图像】", grayImage);
-
-	//为了得到二值图像，对灰度图进行边缘检测  
-	Mat cannyImage;
-	Canny(grayImage, cannyImage, cannyThreshold1, cannyThreshold2, 3);
-	//Canny(grayImage, cannyImage, 128, 255, 3);
-	//imshow("cannyImage", cannyImage);
-	//在得到的二值图像中寻找轮廓  
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-	findContours(cannyImage, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-
-
-	//绘制轮廓  
-	for (int i = 0; i < (int)contours.size(); i++)
-	{
-		drawContours(cannyImage, contours, i, Scalar(255), 1, 8);
-	}
-	//imshow("【处理后的图像】", cannyImage);
-
-	
-	//筛选最大面积
-	vector <vector<Point>>::iterator iter = contours.begin();
-	double maxArea = contourArea(*iter);
-	for (; iter != contours.end();)
-	{
-		double g_dConArea = contourArea(*iter);
-		if (g_dConArea > maxArea)
-		{
-			maxArea = g_dConArea;
-			iter++;
-		}
-		else
-		{
-			iter = contours.erase(iter);
-		}
-	}
-	areaImage = Mat(srcImage.size(), CV_8U, Scalar(0));
-	//Mat result(srcImage.size(), CV_8U, Scalar(0));
-	drawContours(areaImage, contours, -1, Scalar(255), 1);   // -1 表示所有轮廓  
-	return maxArea;
-}
-
-double Cutter::contourAreaCompare(const Mat & image1, const Mat & image2)
-{
-	double area1 = getArea(image1, areaResult.areaImage);
-	double area2 = getArea(image2, areaResult.stdAreaImage);
-	areaResult.area = area1;
-	areaResult.stdArea = area2;
-	double diff = area1 > area2 ? area1 - area2 : area2 - area1;
-	return diff ;
 }
 
 

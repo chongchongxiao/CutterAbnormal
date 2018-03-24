@@ -18,7 +18,6 @@ public:
 	void setTimeDiff(int t);//设置时差
 	void setVideoPath(string path);//设置待判断视频的文件路径
 	void setHistThreshold(double ht);//设置直方图阈值
-	void setAreaThreshold(double areaTr, double tr1 = 128, double tr2 = 255);
 	bool addStdVideo(ConfigPara conf);//添加基准视频的一些配置参数
 	void setConfigePara(string cutterType, string partType);//开始判别前设置的参数
 	

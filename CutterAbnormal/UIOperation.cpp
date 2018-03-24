@@ -61,15 +61,6 @@ int UIOperation::getJudgeResult(int ms,int method)
 		return result;
 		break;
 	}
-	case CONTOURAREA:
-	{
-		result = standard.empty() ? result | 4 : result;//第三位表示基准图像是否读取失败
-		int t = cutter->compareImage(src, standard, CONTOURAREA);
-		result = t == 1 ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
-		result = t == -1 ? result | 16 : result;//第五位表示后台程序异常 
-		return result;
-		break;
-	}
 	case INCEPTION_V3:
 	{
 		int t = cutter->judgeImage(src, INCEPTION_V3);
@@ -110,14 +101,6 @@ void* UIOperation::getJudgeResultTest(int ms,int method)
 		return histResult;
 		break;
 	}
-	case CONTOURAREA:
-	{
-		AreaResult * areaResult = (AreaResult*)cutter->compareImageTest(src, standard, CONTOURAREA);
-		result = areaResult->abnormal ? result | 8 : result;//第四位表示判断结果，只有前三位均为0的时候，这个判断为异常才是真正的出现异常
-		areaResult->result = result;
-		return areaResult;
-		break;
-	}
 	case INCEPTION_V3:
 	{
 		return NULL;
@@ -137,12 +120,6 @@ void UIOperation::setHistThreshold(double ht)
 	cutter->setHistThreshold(ht);
 }
 
-void UIOperation::setAreaThreshold(double areaTr, double tr1, double tr2)
-{
-	cutter->setAreaThreshold(areaTr, tr1, tr2);
-}
-
-
 Mat UIOperation::getVideoImage(int ms)
 {
 	return getFrameFromVideo(videoPath, ms);
@@ -158,10 +135,6 @@ Mat UIOperation::getStandardVideoImage(int ms)
 	return getFrameFromVideo(standardVideoPath, ms);
 }
 
-/*bool UIOperation::isAbnormal()
-{
-	return abnormal;
-}*/
 
 TemplatePara UIOperation::makeTmp(string path,int ms, int length , int width )//如果参数有默认值，则只需要在声明的时候写出即可，定义不需要再写
 {
