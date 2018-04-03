@@ -232,9 +232,12 @@ void MainWindow::saveTemplate()
 void MainWindow::capture()
 {
 	UIO->setVideoPath("E://VisualProjects//video//Camera Roll//原始_短刀1.mp4");
-	UIO->setConfigePara("AC", "BD");
+	vector<string> files;
+	string file = "E:\\qq文件\\569276205\\FileRecv\\3正常.mp4";
+	files.push_back(file);
+	UIO->setConfigePara("A", "1");
 	//HistResult* histResult = (HistResult*)UIO->getJudgeResultTest(10000, HIST); 
-	Mat ff = UIO->getVideoImage(1000);
+	UIO->makeTrainData(files);
 	//int a = UIO->getJudgeResult(5000, INCEPTION_V3);
 	//cout << a << endl;
 }

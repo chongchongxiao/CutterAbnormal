@@ -1,5 +1,5 @@
 #include "StandardVideo.h"
-
+#include<qDebug>
 
 StandardVideo::StandardVideo()
 {
@@ -27,7 +27,6 @@ Mat StandardVideo::getCutterByTemplate(const Mat & image_source)
 	Point cutterRectCenter;//刀具框的中心点
 						   //寻找最佳匹配位置  
 	minMaxLoc(image_matched, &minVal, &maxVal, &minLoc, &maxLoc);
-
 	Mat image_result = image_source;
 	//cvtColor(image_source, image_color, CV_GRAY2BGR);
 
@@ -38,9 +37,35 @@ Mat StandardVideo::getCutterByTemplate(const Mat & image_source)
 	//刀具框
 	cutterRectCenter.x = templateRectCenter.x;
 	cutterRectCenter.y = templateRectCenter.y + configPara.distanceCenter;
-
-	image_result = image_result(Range(cutterRectCenter.y - configPara.cutterRectLength / 2, cutterRectCenter.y + configPara.cutterRectLength / 2),
-		Range(cutterRectCenter.x - configPara.cutterRectWide / 2, cutterRectCenter.x + configPara.cutterRectWide / 2));
+	
+	int start_y = cutterRectCenter.y - configPara.cutterRectLength / 2;
+	int end_y = cutterRectCenter.y + configPara.cutterRectLength / 2;
+	int start_x = cutterRectCenter.x - configPara.cutterRectWide / 2;
+	int end_x = cutterRectCenter.x + configPara.cutterRectWide / 2;
+	//防止数组越界，做一下越界检查
+	if (start_y < 0)
+	{
+		end_y -= start_y;
+		start_y = 0;
+	}
+	if (start_x < 0)
+	{
+		end_x -= start_x;
+		start_x = 0;
+	}
+	if (end_y > image_result.rows)
+	{
+		int diff = end_y - image_result.rows;
+		end_y -= diff;
+		start_y -= diff;
+	}
+	if (end_x > image_result.cols)
+	{
+		int diff = end_x - image_result.cols;
+		end_x -= diff;
+		start_x -= diff;
+	}
+	image_result = image_result(Range(start_y, end_y), Range(start_x, end_x));
 	return image_result;
 }
 
@@ -229,7 +254,6 @@ string StandardVideo::getTime()
 	timeinfo = localtime(&rawtime);
 	char timeNow[256];
 	memset(timeNow, '\0', 256);
-	//根据当前时间得到文件名(一个月一个log文件)
 	sprintf(timeNow, "%04d%02d%02d%02d%02d%02d", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday,
 		timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 	return string(timeNow);
